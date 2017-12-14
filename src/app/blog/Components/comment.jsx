@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import AddComment from './addComment.jsx';
 
 export class Comment extends Component{
   constructor(props){
@@ -16,13 +17,15 @@ export class Comment extends Component{
   }
 
   render(){
+    var today = new Date();
+    let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
         return (
-            <div className="post-comment" id={this.props.id} parent={parent_id}>
-              <h2>{this.props.title}</h2>
-              <p>{this.props.user} | {this.props.date}</p>
-              <p>{this.props.content}</p>
-            </div>
-        );
+          <div id={this.props.id} className="comment">
+            <span>{this.props.user} : {this.props.date}</span>
+            <p>{this.props.content}</p>
+            <AddComment postId={this.props.postId} id={Math.floor(Math.random() * 1000)} parent={this.props.parent_id} date={date}/>
+          </div>
+          );
       }
 }
 

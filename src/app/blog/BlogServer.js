@@ -35,14 +35,20 @@ var options = {method: method, headers: headers, mode: 'cors', cache: 'default' 
     return fetch(url, options).then(response => response.text());
   }
 
-  var PostCommentsByPostID = function(postID) {
-    console.log('PostCommentsByPostID');
+  var PostCommentsByPostID = function(postID, data) {
     method = 'POST';
+    console.log('PostCommentsByPostID', method, options);
     var url = 'http://localhost:9001/posts/' + postID + '/comments';
+
+    var xhr = new XMLHttpRequest();
+      xhr.open("POST", url, true);
+      xhr.setRequestHeader('Content-Type', 'application/json');
+      xhr.send(JSON.stringify(data));
+
     return fetch(url, options).then(response => response.text());
   }
 
-  var UpdateCommentsByID = function(id) {
+  var UpdateCommentsByID = function(id,data) {
     console.log('UpdateCommentsByID');
     method = 'PUT';
     var url = 'http://localhost:9001/comments/' + id;
