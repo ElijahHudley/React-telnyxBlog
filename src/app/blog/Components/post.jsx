@@ -14,6 +14,7 @@ export class Post extends Component{
   }
 
   getCommentsForPost(){
+    console.log('mounted');
 
   }
 
