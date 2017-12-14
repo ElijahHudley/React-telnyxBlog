@@ -1,45 +1,61 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
+import * as BlogServer from '../BlogServer.js';
 
 export class Post extends Component{
   constructor(props){
     super(props);
-
-    // this.state = {
-    //   post: []
-    // };
+    console.log('props and stuff', props, this);
+    this.state = {post: [], comments: []};
   }
 
   componentWillMount(){
-    console.log('Post state', this.props.location['state'].post);
-    this.setState({post: this.props.location['state'].post});
+    if(this.props.location['state'] === undefined){
+      console.log('spawned without data');
+
+      //this.setState({post: {id:'', postId:'', parent_id:'', user:'', datecontent:'' }});
+      this.GetCurrentPost();
+      this.GetComments();
+
+    }else{
+      console.log('Post state', this.props.location['state'].post);
+      this.setState({post: this.props.location['state'].post});
+      this.GetComments();
+    }
   }
 
   componentDidMount() {
   }
 
-  componentWillReceiveProps(nextProps){
-    console.log('componentWillReceiveProps', nextProps);
+  GetCurrentPost(){
+    var self = this;
+
+    var id = this.props.params.id;
+    BlogServer.getPostByID(id).then(function(data){
+      data = JSON.parse(data);
+      return data;
+    }).then(function(data){
+      self.setState({post: data});
+    });
   }
 
-  getCommentsForPost(){
+  GetComments(){
     var self = this;
-    fetch('http://localhost:9001/' + this.state.post.id + '/comments').then(
-      function(response){
-        console.log('getCommentsForPost response', response);
-        return response.json();
-      })
-      .then(function(data){
-        console.log('getCommentsForPost data', data);
+    var id = this.props.params.id;
 
-        var sortedComments = data.sort((a,b) => {
-          return new Date(a.date).getTime() - new Date(b.date).getTime()
-        }).reverse();
+    BlogServer.getCommentsByPostID(id).then(function(data){
+      data = JSON.parse(data);
+      return data;
 
-        return sortedComments;
-      }).then(function(data){
-        self.setState({comments: data});
-      });
+    }).then(function(data){
+      console.log('GetComments', data);
+
+      var sortedPosts = data.sort((a,b) => {
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
+      }).reverse();
+
+      self.setState({comments: data});
+    });
   }
 
   render(){
@@ -49,6 +65,17 @@ export class Post extends Component{
               <p>{this.state.post.author} | {this.state.post.publish_date}</p>
               <div dangerouslySetInnerHTML={{ __html: this.state.post.content }} />
               <Link to={"/blog"}>Back</Link>
+
+              <h3>Comments</h3>
+              <div className="post-comments">
+                View comments here
+              </div>
+
+              <h3>Add Comment</h3>
+              <div className="post-add-comments">
+                Add a comment here
+              </div>
+
             </div>
         );
       }

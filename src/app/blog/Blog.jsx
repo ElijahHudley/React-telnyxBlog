@@ -3,7 +3,7 @@
  **/
 import React, { Component } from 'react';
 import { Route, Redirect, browserHistory } from 'react-router';
-
+import * as BlogServer from './BlogServer.js';
 import Post from './Components/post.jsx';
 
 // Render static HTML:
@@ -11,36 +11,31 @@ import __html from './blog.html';
 
 class Blog extends Component {
   constructor(props){
-    console.log('BLOG', props);
     super(props);
-
-    this.state = {
-      posts: []
-    };
+    this.state = {posts: []};
   }
 
   componentWillMount(){
     console.log('componentWillMount');
-    this.GetBlogPosts();
+    this.GetPosts();
   }
 
-  GetBlogPosts(){
+  GetPosts(){
     var self = this;
-    fetch('http://localhost:9001/posts').then(
-      function(response){
-        console.log('response', response);
-        return response.json();
-      })
-      .then(function(data){
-        var sortedPosts = data.sort((a,b) => {
-          return new Date(a.publish_date).getTime() - new Date(b.publish_date).getTime();
-        }).reverse();
 
-        return sortedPosts;
-      }).then(function(data){
-        self.setState({posts: data});
+    BlogServer.getAllPosts().then(function(data){
+      data = JSON.parse(data);
+      return data;
 
-      });
+    }).then(function(data){
+      console.log('BlogServer', data);
+
+      var sortedPosts = data.sort((a,b) => {
+        return new Date(a.publish_date).getTime() - new Date(b.publish_date).getTime();
+      }).reverse();
+
+      self.setState({posts: data});
+    });
   }
 
   renderPost(itemID){
@@ -55,7 +50,7 @@ class Blog extends Component {
 
     if(post !== null){
       console.log('post', post);
-      browserHistory.push({pathname: "/post/" + post.slug, state: {post: post}});
+      browserHistory.push({pathname: "/post/"+ post.id + "/" + post.slug, state: {post: post}});
     }
   }
 

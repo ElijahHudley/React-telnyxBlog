@@ -23,7 +23,7 @@ render((
     <Route path='/' component={App}>
       <IndexRoute component={Home}/>
       <Route path='blog' component={Blog}/>
-      <Route path="post/:slug" component={Post} />
+      <Route path="post/:id/:slug" component={Post} />
       <Route path='about' component={About}/>
       <Route path='home' component={Home}/>
 

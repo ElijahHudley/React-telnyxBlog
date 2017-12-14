@@ -21,7 +21,6 @@ export class Comment extends Component{
               <h2>{this.props.title}</h2>
               <p>{this.props.user} | {this.props.date}</p>
               <p>{this.props.content}</p>
-
             </div>
         );
       }
