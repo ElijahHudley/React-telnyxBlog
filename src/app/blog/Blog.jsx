@@ -2,7 +2,7 @@
  * @overview Blog page.  Renders static content.
  **/
 import React, { Component } from 'react';
-import { Route, Redirect } from 'react-router';
+import { Route, Redirect, browserHistory } from 'react-router';
 
 import Post from './Components/post.jsx';
 
@@ -19,8 +19,8 @@ class Blog extends Component {
     };
   }
 
-  componentDidMount(){
-    console.log('mounted');
+  componentWillMount(){
+    console.log('componentWillMount');
     this.GetBlogPosts();
   }
 
@@ -32,38 +32,42 @@ class Blog extends Component {
         return response.json();
       })
       .then(function(data){
-        console.log('response data', data);
+        var sortedPosts = data.sort((a,b) => {
+          return new Date(a.publish_date).getTime() - new Date(b.publish_date).getTime();
+        }).reverse();
+
+        return sortedPosts;
+      }).then(function(data){
         self.setState({posts: data});
+
       });
   }
 
-  renderPost(item){
-    console.log('renderPost', item);
+  renderPost(itemID){
+    console.log('renderPost', itemID);
     var post = {};
     for(var c in this.state.posts){
-      if(this.state.posts[c].id === item){
+      if(this.state.posts[c].id === itemID){
         post = this.state.posts[c];
         break;
       }
     }
 
-    <Redirect to={{
-      pathname: '/post',
-      search: '',
-      state: { post: post }
-    }}/>
+    if(post !== null){
+      console.log('post', post);
+      browserHistory.push({pathname: "/post/" + post.slug, state: {post: post}});
+    }
   }
 
 
   render(){
     let posts = this.state.posts.map((item, i) =>
       {return <div key={i} id={i} onClick={(id) => this.renderPost(item.id)} >
-          <Post title={item.title}
-          author={item.author}
-          publish_date={item.publish_date}
-          description={item.description}
-          slug={item.slug}
-          content={item.content}/></div>
+      <div className="post" id={item.id}>
+        <h2>{item.title}</h2>
+        <p>{item.author} | {item.publish_date}</p>
+        <p>{item.description}</p>
+      </div></div>
       });
 
     return (

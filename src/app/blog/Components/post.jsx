@@ -1,32 +1,57 @@
 import React, { Component } from 'react';
+import { Link } from 'react-router';
 
 export class Post extends Component{
   constructor(props){
     super(props);
-    console.log('Post', props)
 
-    this.state = {
-    };
+    // this.state = {
+    //   post: []
+    // };
   }
 
-  componentDidMount(){
-    console.log('mounted');
+  componentWillMount(){
+    console.log('Post state', this.props.location['state'].post);
+    this.setState({post: this.props.location['state'].post});
+  }
+
+  componentDidMount() {
+  }
+
+  componentWillReceiveProps(nextProps){
+    console.log('componentWillReceiveProps', nextProps);
   }
 
   getCommentsForPost(){
-    console.log('mounted');
+    var self = this;
+    fetch('http://localhost:9001/' + this.state.post.id + '/comments').then(
+      function(response){
+        console.log('getCommentsForPost response', response);
+        return response.json();
+      })
+      .then(function(data){
+        console.log('getCommentsForPost data', data);
 
+        var sortedComments = data.sort((a,b) => {
+          return new Date(a.date).getTime() - new Date(b.date).getTime()
+        }).reverse();
+
+        return sortedComments;
+      }).then(function(data){
+        self.setState({comments: data});
+      });
   }
 
-    render(){
+  render(){
         return (
-            <div className="post" key={this.props.id} id={this.props.id}>
-              <h2>{this.props.title}</h2>
-              <p>{this.props.author} | {this.props.publish_date}</p>
-              <div dangerouslySetInnerHTML={{ __html: this.props.content }} />
+            <div className="post-content" id={this.state.post.id}>
+              <h2>{this.state.post.title}</h2>
+              <p>{this.state.post.author} | {this.state.post.publish_date}</p>
+              <div dangerouslySetInnerHTML={{ __html: this.state.post.content }} />
+              <Link to={"/blog"}>Back</Link>
             </div>
         );
-    }
+      }
 }
 
 export default Post;
