@@ -6,6 +6,7 @@ var BlogServer = (function() {
 
 // **POST** /posts/{id}/comments` *Add comment to single blog post*
 // **PUT** `/comments/{id}` *Update single comment*
+
 var method = 'GET';
 var headers = new Headers();
 var options = {method: method, headers: headers, mode: 'cors', cache: 'default' };
@@ -37,7 +38,7 @@ var options = {method: method, headers: headers, mode: 'cors', cache: 'default' 
 
   var PostCommentsByPostID = function(postID, data) {
     method = 'POST';
-    console.log('PostCommentsByPostID', method, options);
+    console.log('PostCommentsByPostID', method, options, data);
     var url = 'http://localhost:9001/posts/' + postID + '/comments';
 
     var xhr = new XMLHttpRequest();
@@ -54,7 +55,6 @@ var options = {method: method, headers: headers, mode: 'cors', cache: 'default' 
     var url = 'http://localhost:9001/comments/' + id;
     return fetch(url, options).then(response => response.text());
   }
-
 
   return {
       getAllPosts: getAllPosts,

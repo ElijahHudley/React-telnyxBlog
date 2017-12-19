@@ -2,6 +2,18 @@ html,
 body,
 body > .container {
   height: 100%;
+  color: #fff;
+  background: #424242;
+}
+a{
+  background: #007bff;
+  color: #fff;
+  padding: 5px;
+  margin: 5px;
+}
+
+a:hover{
+  color: #000;
 }
 
 body {
@@ -19,6 +31,8 @@ body {
     margin: 1% 0px;
     border: 1px solid #000;
     background-color:rgba(0,0,0,0.3);
+    padding: 1%;
+
   }
 
   .post:hover{
@@ -29,8 +43,10 @@ body {
     margin: 1% 0px;
     border: 1px solid #000;
     background-color:rgba(0,0,0,0.3);
+    padding: 1%;
 
-    .add-comment{
+    &.child-comment{
+      margin-left: 5%;
     }
   }
 }

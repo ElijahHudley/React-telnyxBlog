@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 import Comment from './comment.jsx';
+import AddComment from './addComment.jsx';
 import * as BlogServer from '../BlogServer.js';
 
 export class Post extends Component{
@@ -14,7 +15,6 @@ export class Post extends Component{
     if(this.props.location['state'] === undefined){
       console.log('spawned without data');
 
-      //this.setState({post: {id:'', postId:'', parent_id:'', user:'', datecontent:'' }});
       this.GetCurrentPost();
       this.GetComments();
 
@@ -30,8 +30,8 @@ export class Post extends Component{
 
   GetCurrentPost(){
     var self = this;
-
     var id = this.props.params.id;
+
     BlogServer.getPostByID(id).then(function(data){
       data = JSON.parse(data);
       return data;
@@ -49,45 +49,30 @@ export class Post extends Component{
       return data;
 
     }).then(function(data){
-      console.log('GetComments', data);
+      for(var i in data){
+        data[i].children = [];
+      }
 
       var sortedPosts = data.sort((a,b) => {
-        return new Date(a.parent_id).getTime() - new Date(b.parent_id).getTime();
+        return new Date(a.date).getTime() - new Date(b.date).getTime();
       }).reverse();
 
+      return sortedPosts;
+
+    }).then(function(data){
+      console.log('GetComments', data);
       self.setState({comments: data});
     });
   }
 
 
-  handleChange(event) {
-    this.setState({author: event.target.value});
-  }
-
-  handleTextChange(event) {
-    this.setState({comment: event.target.value});
-  }
-
-  handleSubmit(event) {
-    console.log('An essay was submitted: ' + this.state.value);
-
-    var comment = {
-    "id": this.props.id,
-    "postId": this.props.postId,
-    "parent_id": this.props.parent || null, // Parent comment for replies, is `null` if top-level comment
-    "user": this.state.author,          // Name of commenter
-    "date": this.props.date,          // Date of comment in YYYY-MM-DD format
-    "content": this.state.comment        // Comment content
-    }
-
-    BlogServer.PostCommentsByPostID(this.state.post.postId, comment);
-    event.preventDefault();
-  }
-
   render(){
       let comments = this.state.comments.map((item,i) => {
-        return (<Comment  key={i} id={item.id} content={item.content} date={item.date} parent_id={item.parent_id} postId={item.postId} user={item.user} />)
+        return (<Comment updateComments={() => this.GetComments()} key={i} id={item.id} content={item.content} date={item.date} parent_id={item.parent_id} type={item.type} postId={item.postId} user={item.user} />)
       })
+
+      var today = new Date();
+      let date = today.getFullYear()+'-'+(today.getMonth()+1)+'-'+today.getDate();
 
         return (
             <div className="post-content" id={this.state.post.id}>
@@ -96,27 +81,20 @@ export class Post extends Component{
               <div dangerouslySetInnerHTML={{ __html: this.state.post.content }} />
               <Link to={"/blog"}>Back</Link>
 
+              <br/>
+              <br/>
+
               <h3>Comments</h3>
               <div className="post-comments">
                 View comments here
                 {comments}
               </div>
 
-              <h3>Add Comment</h3>
-              <div className="post-add-comments">
-              <form onSubmit={this.handleSubmit}>
-                <label>
-                  Name:<br/>
-                  <input type="text" value={this.state.author} onChange={this.handleChange} />
-                </label>
-                <br/>
-                <label>
-                  Comment Text:<br/>
-                  <textarea type="text" value={this.state.comment} onChange={this.handleTextChange} />
-                </label>
-                <br/><input type="submit" value="Submit" />
-              </form>
-              </div>
+              <br/>
+              <br/>
+
+              <h3>Add New Comment</h3>
+              <AddComment updateComments={() => this.GetComments()} showForm={false} postId={this.props.params.id} id={Math.floor(Math.random() * 1000)} parent={null} date={date}/>
 
             </div>
         );

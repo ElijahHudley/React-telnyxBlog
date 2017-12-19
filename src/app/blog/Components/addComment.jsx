@@ -6,7 +6,7 @@ export class AddComment extends Component{
     super(props);
 
     this.state = {
-      showForm: true,
+      showForm: this.props.showForm,
       author: 'Author',
       comment: 'Comment'
     };
@@ -23,7 +23,6 @@ export class AddComment extends Component{
   }
 
   ToggleForm(){
-    console.log('this st', this.state)
     if(this.state.showForm){
       this.setState({showForm: false});
     }else{
@@ -40,7 +39,9 @@ export class AddComment extends Component{
   }
 
 handleSubmit(event) {
-  console.log('An essay was submitted: ' + this.state.value);
+  event.preventDefault();
+  var self = this;
+  console.log('AddComment handleSubmit', this.state ,this.props, this.props.parent, event)
 
   var comment = {
   "id": this.props.id,
@@ -51,19 +52,25 @@ handleSubmit(event) {
   "content": this.state.comment        // Comment content
   }
 
-  BlogServer.PostCommentsByPostID(this.props.postId, comment);
-  event.preventDefault();
+  console.log('comment', comment)
+
+  BlogServer.PostCommentsByPostID(this.props.postId, comment).then(function(data){
+    self.setState({comment: ''});
+    self.setState({author: ''});
+    self.props.updateComments();
+  });
+
 }
 
   render(){
         return (
           <div className='add-comment'>
-          <button onClick={() => this.ToggleForm()}> Reply {this.state.showForm ? 'show' : 'hide'}</button>
+          <button onClick={() => this.ToggleForm()}> Reply {this.state.showForm ? '' : 'hide'}</button>
 
           <div className={this.state.showForm ? 'hidden' : '' + ' add-comment-form'}>
-            <span>NEW id:{this.props.id}</span><br/>
-            <span>parent:{this.props.parent}</span><br/>
-            <span>NEW date:{this.props.date}</span><br/>
+            <span>id: {this.props.id}</span><br/>
+            <span>parent: {this.props.parent}</span><br/>
+            <span>date: {this.props.date}</span><br/>
 
             <form onSubmit={this.handleSubmit}>
               <label>
