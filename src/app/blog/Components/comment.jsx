@@ -23,7 +23,7 @@ export class Comment extends Component{
     }
 
         return (
-          <div id={this.props.id} className={"comment" + type}>
+          <div id={'comment-'+this.props.id} className={"comment" + type}>
           <span>id: {this.props.id}</span><br/>
           <span>parent: {this.props.parent_id}</span><br/>
           <span>date: {this.props.date}</span><br/>

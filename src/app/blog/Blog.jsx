@@ -4,7 +4,6 @@
 import React, { Component } from 'react';
 import { Route, Redirect, browserHistory } from 'react-router';
 import * as BlogServer from './BlogServer.js';
-import Post from './Components/post.jsx';
 
 // Render static HTML:
 import __html from './blog.html';
@@ -22,8 +21,9 @@ class Blog extends Component {
 
   GetPosts(){
     var self = this;
+    console.log('GetPosts');
 
-    BlogServer.getAllPosts().then(function(data){
+    return BlogServer.getAllPosts().then(function(data){
       data = JSON.parse(data);
       return data;
 
@@ -35,6 +35,7 @@ class Blog extends Component {
       }).reverse();
 
       self.setState({posts: data});
+      return data;
     });
   }
 
@@ -57,12 +58,10 @@ class Blog extends Component {
 
   render(){
     let posts = this.state.posts.map((item, i) =>
-      {return <div key={i} id={i} onClick={(id) => this.renderPost(item.id)} >
-      <div className="post" id={item.id}>
+      {return <div key={i} onClick={(id) => this.renderPost(item.id)} className="post" id={'post-' + item.id}>
         <h2>{item.title}</h2>
         <p>{item.author} | {item.publish_date}</p>
-        <p>{item.description}</p>
-      </div></div>
+        <p>{item.description}</p> </div>
       });
 
     return (

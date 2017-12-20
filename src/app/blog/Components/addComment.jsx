@@ -82,7 +82,7 @@ handleSubmit(event) {
                 Comment Text:<br/>
                 <textarea type="text" value={this.state.comment} onChange={this.handleTextChange} />
               </label>
-              <br/><input type="submit" value="Submit" />
+              <br/><input id="Submit-btn" type="submit" value="Submit" />
             </form>
           </div>
           </div>
