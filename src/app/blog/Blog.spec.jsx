@@ -28,16 +28,15 @@ describe('Blog', function() {
     }]});
   });
 
-  it("Posts are loaded on startup", function() {
-    let data = ReactTestUtils.scryRenderedDOMComponentsWithClass(this.component, 'post');
-    expect(data.length > 0).toBe(true);
-  });
-
-
   it('renders a Blog', function() {
     let element = React.createElement(Blog,{});
     expect(function() {
       var component = ReactTestUtils.renderIntoDocument(element);
     }).not.toThrow();
+  });
+
+  it("Posts are loaded on startup", function() {
+    let data = ReactTestUtils.scryRenderedDOMComponentsWithClass(this.component, 'post');
+    expect(data.length > 0).toBe(true);
   });
 });
